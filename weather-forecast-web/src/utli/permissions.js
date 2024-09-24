@@ -1,10 +1,10 @@
-async function getGeoPermission() {
+async function GetGeoPermission() {
   try {
     const result = await navigator.permissions.query({ name: "geolocation" });
-    return `${permission}: ${result.state}`;
+    return result.state;
   } catch (error) {
     return `${permission} (not supported)`;
   }
 }
 
-export default getGeoPermission;
+export default GetGeoPermission;

@@ -1,20 +1,20 @@
-const options = {
-  enableHighAccuracy: true,
-  timeout: 5000,
-  maximumAge: 0,
-};
+function GetLocation() {
+  navigator.geolocation.getCurrentPosition(success, error);
 
-function success(pos) {
-  const crd = pos.coords;
+  function success(pos) {
+    const lat = pos.coords.latitude;
+    const long = pos.coors.longitude;
 
-  console.log("Your current position is:");
-  console.log(`Latitude : ${crd.latitude}`);
-  console.log(`Longitude: ${crd.longitude}`);
-  console.log(`More or less ${crd.accuracy} meters.`);
+    console.log("Your current position is:");
+    console.log(`Latitude : ${lat}`);
+    console.log(`Longitude: ${long}`);
+
+    GetWeather(lat, long)
+  }
+
+  function error(err) {
+    console.warn(`ERROR(${err.code}): ${err.message}`);
+  }
 }
 
-function error(err) {
-  console.warn(`ERROR(${err.code}): ${err.message}`);
-}
-
-navigator.geolocation.getCurrentPosition(success, error, options);
+export default GetLocation;
