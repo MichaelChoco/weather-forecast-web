@@ -1,0 +1,87 @@
+* {
+  margin: 0;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+div {
+  border: 2px solid black;
+}
+
+body {
+  background-color: #a3cbd5;
+}
+.weather-container {
+  width: 100%;
+  padding: 30px;
+  background-color: white;
+  text-align: center;
+  border-radius: 10px;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.header {
+  grid-row: 1;
+}
+
+.LeftSection,
+.RightSection {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+}
+
+.Main {
+  display: grid;
+  height: 600px;
+  grid-template-columns: 2fr 3fr;
+  grid-gap: 10px;
+  grid-row: 2;
+}
+
+.Chart {
+  height: 60%;
+}
+
+.forcast,
+.HumWind {
+  display: flex;
+  flex: auto;
+  gap: 10px;
+}
+
+.forcast-item,
+.Weather-Img,
+.Temperture,
+.Humidity,
+.WindSpeed {
+  flex: auto;
+}
+
+.Location {
+  height: 10%;
+  display: flex;
+  white-space: nowrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.Left-Mid {
+  display: flex;
+  gap: 10px;
+  height: 40%;
+}
+
+.Condition {
+  height: 10%;
+}
+
+input {
+    font-size: 15px;
+    border-radius: 5px;
+}
+
+.CurrentDTM{
+    color: gray;
+}
