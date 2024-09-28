@@ -12,23 +12,6 @@ function WeatherContainer() {
   const [forecastData, setForcastData] = useState([]);
   const loadWeather = async () => {
     const loc = await getLocation();
-    // const data = await currentWeather(loc.lat, loc.long);
-    // console.log(data);
-    // setCurrentData({
-    //   city: data.name,
-    //   humidity: data.main.humidity,
-    //   temperature: data.main.temp,
-    //   windspeed: data.wind.speed,
-    //   weather: data.weather[0].main,
-    //   icon: data.weather[0].icon,
-    // });
-    // console.log(weatherData);
-
-    // const forecast = await forecastWeather(loc.lat, loc.long)
-    // setForcastData({
-
-    // })
-
     Promise.all([forecastWeatherApi(loc.lat, loc.long)]).then((values) => {
       const weatherinfo = values[0];
       setCurrentData({
@@ -71,13 +54,15 @@ function WeatherContainer() {
               <img src={currentData.icon} alt={currentData.weather}></img>
             </div>
             <div className="Temperture">
-              {currentData?.temperature ?? "0"}°C
+              <b className="currenttemp">{currentData?.temperature ?? "0"}°C</b>
             </div>
           </div>
-          <div className="Condition"><p>{currentData?.weather ?? ""}</p></div>
+          <div className="Condition">
+            <b className="currentweather">{currentData?.weather ?? ""}</b>
+          </div>
           <div className="HumWind">
             <div className="Humidity">
-              <p>Humidity</p>
+              <p className="humi">Humidity</p>
               <p>{currentData?.humidity ?? "0"}%</p>
             </div>
             <div className="WindSpeed">
@@ -97,9 +82,9 @@ function WeatherContainer() {
                     data: forecastData.map((data) => data.temp),
                     fill: true,
                     tension: 0.5,
-                    pointStyle: "line",
                     borderColor: "rgb(85, 150, 246)",
                     backgroundColor: "rgb(238, 244, 254)",
+                    pointRadius: 0,
                   },
                 ],
               }}
@@ -107,6 +92,9 @@ function WeatherContainer() {
                 plugins: {
                   legend: {
                     display: false,
+                    labels: {
+                      usePointStyle: false,
+                    },
                   },
                   title: {
                     display: true,
@@ -120,10 +108,13 @@ function WeatherContainer() {
                   },
                   y: {
                     display: false,
+                    ticks: {
+                      stepSize: 1,
+                    },
                   },
                 },
                 responsive: true,
-                maintainAspectRatio: false
+                maintainAspectRatio: false,
               }}
             />
           </div>
