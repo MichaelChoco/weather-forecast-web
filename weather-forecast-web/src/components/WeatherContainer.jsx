@@ -100,6 +100,11 @@ function WeatherContainer() {
                     display: true,
                     text: "Temperature",
                     align: "start",
+                    font: {
+                      weight: "bold",
+                      size: "23",
+                    },
+                    color: "black"
                   },
                 },
                 scales: {
