@@ -1,14 +1,15 @@
 import LocationInput from "./LocationInput";
 import CurrentDTM from "./CurrentDTM";
 import { useEffect, useState } from "react";
-import { currentWeather, forecastWeather } from "../utils/api/getWeather";
 import { getLocation } from "../utils/location";
-
+import { Line } from "react-chartjs-2";
+import Chart, { CategoryScale } from "chart.js/auto";
+import { forecastWeatherApi } from "../utils/api/getWeatherapi";
 function WeatherContainer() {
   const [currentData, setCurrentData] = useState({
     city: "London",
   });
-  const [forcastData, setForcastData] = useState({});
+  const [forecastData, setForcastData] = useState([]);
   const loadWeather = async () => {
     const loc = await getLocation();
     // const data = await currentWeather(loc.lat, loc.long);
@@ -28,30 +29,34 @@ function WeatherContainer() {
 
     // })
 
-
-    Promise.all([
-      currentWeather(loc.lat, loc.long),
-      forecastWeather(loc.lat, loc.long)
-    ])
-    .then(values => {
-      const current = values[0];
-      const forecast = values[1];
+    Promise.all([forecastWeatherApi(loc.lat, loc.long)]).then((values) => {
+      const weatherinfo = values[0];
       setCurrentData({
-        city: current.name,
-        humidity: current.main.humidity,
-        temperature: current.main.temp,
-        windspeed: current.wind.speed,
-        weather: current.weather[0].main,
-        icon: current.weather[0].icon,
+        city: weatherinfo.location.name,
+        humidity: weatherinfo.current.humidity,
+        temperature: weatherinfo.current.heatindex_c,
+        windspeed: weatherinfo.current.wind_kph,
+        weather: weatherinfo.current.condition.text,
+        icon: weatherinfo.current.condition.icon,
       });
-      console.log(forecast)
-    })
+      const forecastinfo = weatherinfo.forecast.forecastday.map((item) => ({
+        date: item.date,
+        temp: item.day.avgtemp_c,
+        humidity: item.day.avghumidity,
+        weather: item.day.condition.text,
+        icon: item.day.condition.icon,
+      }));
+      setForcastData(forecastinfo);
+      console.log(currentData);
+      console.log(forecastData);
+    });
   };
 
   useEffect(() => {
     loadWeather();
+    Chart.register(CategoryScale);
   }, []);
-  console.log(currentData);
+
   return (
     <div className="weather-container">
       <div className="header">
@@ -62,30 +67,95 @@ function WeatherContainer() {
           <LocationInput location={currentData?.city ?? ""} />
           <CurrentDTM location={location} />
           <div className="Left-Mid">
-            <div className="Weather-Img"></div>
+            <div className="Weather-Img">
+              <img src={currentData.icon} alt={currentData.weather}></img>
+            </div>
             <div className="Temperture">
               {currentData?.temperature ?? "0"}°C
             </div>
           </div>
-          <div className="Condition">{currentData?.weather ?? ""}</div>
+          <div className="Condition"><p>{currentData?.weather ?? ""}</p></div>
           <div className="HumWind">
             <div className="Humidity">
               <p>Humidity</p>
-              {currentData?.humidity ?? "0"}%
+              <p>{currentData?.humidity ?? "0"}%</p>
             </div>
             <div className="WindSpeed">
               <p>Windspeed</p>
-              {currentData?.windspeed ?? "0"} km/j
+              <p>{currentData?.windspeed ?? "0"} km/j</p>
             </div>
           </div>
         </div>
         <div className="RightSection">
-          <div className="Chart"></div>
+          <div className="Chart">
+            <Line
+              data={{
+                labels: forecastData.map((_) => ""),
+                datasets: [
+                  {
+                    type: "line",
+                    data: forecastData.map((data) => data.temp),
+                    fill: true,
+                    tension: 0.5,
+                    pointStyle: "line",
+                    borderColor: "rgb(85, 150, 246)",
+                    backgroundColor: "rgb(238, 244, 254)",
+                  },
+                ],
+              }}
+              options={{
+                plugins: {
+                  legend: {
+                    display: false,
+                  },
+                  title: {
+                    display: true,
+                    text: "Temperature",
+                    align: "start",
+                  },
+                },
+                scales: {
+                  x: {
+                    display: false,
+                  },
+                  y: {
+                    display: false,
+                  },
+                },
+                responsive: true,
+                maintainAspectRatio: false
+              }}
+            />
+          </div>
           <div className="forcast">
-            <div className="forcast-item"></div>
-            <div className="forcast-item"></div>
-            <div className="forcast-item"></div>
-            <div className="forcast-item"></div>
+            <div className="forcast-item today">
+              <p>Today</p>
+              <p>{forecastData[0]?.temp} °C</p>
+              <img src={forecastData[0]?.icon} alt={forecastData[0]?.weather} />
+              <p>Humidity</p>
+              <p>{forecastData[0]?.humidity}%</p>
+            </div>
+            <div className="forcast-item">
+              <p>{forecastData[1]?.date}</p>
+              <p>{forecastData[1]?.temp} °C</p>
+              <img src={forecastData[1]?.icon} alt={forecastData[1]?.weather} />
+              <p>Humidity</p>
+              <p>{forecastData[1]?.humidity}%</p>
+            </div>
+            <div className="forcast-item">
+              <p>{forecastData[2]?.date}</p>
+              <p>{forecastData[2]?.temp} °C</p>
+              <img src={forecastData[2]?.icon} alt={forecastData[2]?.weather} />
+              <p>Humidity</p>
+              <p>{forecastData[2]?.humidity}%</p>
+            </div>
+            <div className="forcast-item">
+              <p>{forecastData[3]?.date}</p>
+              <p>{forecastData[3]?.temp} °C</p>
+              <img src={forecastData[3]?.icon} alt={forecastData[3]?.weather} />
+              <p>Humidity</p>
+              <p>{forecastData[3]?.humidity}%</p>
+            </div>
           </div>
         </div>
       </div>
